@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dragon Curve from WebAssembly</title>
+</head>
+<body>
+
+<canvas id="canvas" width="1920" height="1080">
+Your browser does not support the canvas element.
+</canvas>
+
+
+<script>
+
+  var Module = {
+    onRuntimeInitialized: function() {
+     coords = nativeDragonCurveSequence(11, 500);
+
+      var canvas = document.getElementById("canvas");
+      var ctx = canvas.getContext("2d");
+
+      // calculate offset to contain figure in visible area (it is slow)
+      var xOffset = 0, yOffset = 0;
+      for (i = 0; i < coords.length; i += 2) {
+        if (coords[i] < xOffset) xOffset = coords[i];
+        if (coords[i+1] < yOffset) yOffset = coords[i+1];
+      }
+
+      // Start point
+      ctx.moveTo(-xOffset, -yOffset);
+
+      for (i = 0; i < coords.length; i += 2) {
+        ctx.lineTo(coords[i] - xOffset, coords[i+1] - yOffset);
+        ctx.stroke();
+      }
+    }
+  };
+
+  // Wrapper function that hides memory management
+  function nativeDragonCurveSequence(order, length) {
+    var pointsCount = (Math.pow(2, order) + 1) * 2;
+    var sequence = new Float64Array(pointsCount);
+
+    try {
+      // Allocate memory and copy our blank array to it (to avoid problems with possible garbage)
+      var memoryBuffer = Module._malloc(sequence.length * sequence.BYTES_PER_ELEMENT);
+      Module.HEAPF64.set(sequence, memoryBuffer / sequence.BYTES_PER_ELEMENT);
+      // Call C code
+      Module.ccall('dragon_curve', null, ['number', 'number', 'number'], [order, length, memoryBuffer]);
+      // Copy results from memory to JS array
+      sequence.set(Module.HEAPF64.subarray(memoryBuffer / sequence.BYTES_PER_ELEMENT, memoryBuffer / sequence.BYTES_PER_ELEMENT + pointsCount));
+    } finally {
+      // Release memory
+      Module._free(memoryBuffer);
+    }
+
+    return sequence;
+  }
+
+</script>
+
+<script async type="text/javascript" src="./dragon-curve.js"></script>
+
+
+
+</body>
+</html>
