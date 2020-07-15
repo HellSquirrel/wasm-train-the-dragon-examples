@@ -48,7 +48,7 @@ Your browser does not support the canvas element.
       // Call C code
       Module.ccall('dragon_curve', null, ['number', 'number', 'number'], [order, length, memoryBuffer]);
       // Copy results from memory to JS array
-      sequence.set(Module.HEAPF64.subarray(memoryBuffer / sequence.BYTES_PER_ELEMENT, memoryBuffer / sequence.BYTES_PER_ELEMENT + pointsCount));
+      sequence.set(Module.HEAPF64.subarray(memoryBuffer / sequence.BYTES_PER_ELEMENT, memoryBuffer / sequence.BYTES_PER_ELEMENT + sequence.length));
     } finally {
       // Release memory
       Module._free(memoryBuffer);
