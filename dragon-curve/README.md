@@ -34,3 +34,8 @@ docker run --rm -v $(pwd):$(pwd) -u $(id -u):$(id -g) trzeci/emscripten emcc $(p
     ```
 
 2.  Open http://localhost:8000/ in your browser.
+
+## What is dragon curve?
+
+A simple curve that could be generated as a sequence of left/right turns
+![Dragon Curve generation](dc.svg)
