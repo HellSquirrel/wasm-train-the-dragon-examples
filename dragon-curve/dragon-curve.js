@@ -1289,11 +1289,11 @@ function updateGlobalBufferAndViews(buf) {
 }
 
 var STATIC_BASE = 1024,
-    STACK_BASE = 5247456,
+    STACK_BASE = 5244592,
     STACKTOP = STACK_BASE,
-    STACK_MAX = 4576,
-    DYNAMIC_BASE = 5247456,
-    DYNAMICTOP_PTR = 4416;
+    STACK_MAX = 1712,
+    DYNAMIC_BASE = 5244592,
+    DYNAMICTOP_PTR = 1552;
 
 assert(STACK_BASE % 16 === 0, 'stack must start aligned');
 assert(DYNAMIC_BASE % 16 === 0, 'heap must start aligned');
@@ -1873,7 +1873,7 @@ var ASM_CONSTS = {
 
 
 
-// STATICTOP = STATIC_BASE + 3552;
+// STATICTOP = STATIC_BASE + 688;
 /* global initializers */  __ATINIT__.push({ func: function() { ___wasm_call_ctors() } });
 
 
@@ -1930,7 +1930,7 @@ var ASM_CONSTS = {
     }
 
   function _emscripten_get_sbrk_ptr() {
-      return 4416;
+      return 1552;
     }
 
   
@@ -2032,7 +2032,7 @@ var asm = createWasm();
 var ___wasm_call_ctors = Module["___wasm_call_ctors"] = createExportWrapper("__wasm_call_ctors");
 
 /** @type {function(...*):?} */
-var _dragon_curve = Module["_dragon_curve"] = createExportWrapper("dragon_curve");
+var _dragonCurve = Module["_dragonCurve"] = createExportWrapper("dragonCurve");
 
 /** @type {function(...*):?} */
 var ___errno_location = Module["___errno_location"] = createExportWrapper("__errno_location");
