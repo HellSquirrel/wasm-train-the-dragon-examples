@@ -18,7 +18,7 @@ TODO: dockerize
 
 ```sh
 cd
-clang --target=wasm32 -O3 -nostdlib -Wl,--no-entry -Wl,--export-all -o dragon-curve-pure-llvm/dragon-curve.wasm dragon-curve.c
+clang --target=wasm32 -O3 -nostdlib -Wl,--no-entry -Wl,--export-all -o dragon-curve-pure-llvm/dragon-curve.wasm dragon-curve-pure-llvm/dragon-curve.c
 ```
 
 ### Emscripten
