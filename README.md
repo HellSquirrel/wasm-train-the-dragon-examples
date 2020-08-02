@@ -29,6 +29,10 @@ To build WASM file and JS runtime
 docker run --rm -v $(pwd):$(pwd) -u $(id -u):$(id -g) trzeci/emscripten emcc $(pwd)/dragon-curve-emscripten/dragon-curve.c -o $(pwd)/dragon-curve-emscripten/dragon-curve.js -s EXPORTED_FUNCTIONS='["_dragonCurve"]' -s EXPORTED_RUNTIME_METHODS='["ccall"]' -s ALLOW_MEMORY_GROWTH=1
 ```
 
+### Rust example
+
+`cargo build --target wasm32-unknown-unknown --release`
+
 ## Running
 
 1.  Run web server in this directory:
