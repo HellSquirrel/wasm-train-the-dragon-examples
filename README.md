@@ -17,14 +17,14 @@ This example computes coordinates for [Dragon Curve](https://en.wikipedia.org/wi
 Compile:
 
 ```sh
-docker run --rm -v $(pwd):$(pwd) -u $(id -u):$(id -g) -w $(pwd) all-wasm \
+docker run --rm -v $(pwd):$(pwd) -u $(id -u):$(id -g) -w $(pwd) zloymult/wasm-ttde \
 clang --target=wasm32 -O3 -nostdlib -Wl,--no-entry -Wl,--export-all -o dragon-curve.wasm dragon-curve.c
 ```
 
 Optimize with wasm-opt
 
 ```sh
-docker run --rm -v $(pwd):$(pwd) -u $(id -u):$(id -g) -w $(pwd) all-wasm \
+docker run --rm -v $(pwd):$(pwd) -u $(id -u):$(id -g) -w $(pwd) zloymult/wasm-ttde \
 wasm-opt -Os dragon-curve.wasm -o dragon-curve-opt.wasm
 ```
 
@@ -33,7 +33,7 @@ wasm-opt -Os dragon-curve.wasm -o dragon-curve-opt.wasm
 To build WASM file and JS runtime
 
 ```sh
-docker run --rm -v $(pwd):$(pwd) -w $(pwd) all-wasm \
+docker run --rm -v $(pwd):$(pwd) -w $(pwd) zloymult/wasm-ttde \
 emcc dragon-curve.c -o dragon-curve-em.js -s EXPORTED_FUNCTIONS='["_dragonCurve"]' -s EXPORTED_RUNTIME_METHODS='["ccall"]' -s ALLOW_MEMORY_GROWTH=1
 ```
 
@@ -42,13 +42,13 @@ emcc dragon-curve.c -o dragon-curve-em.js -s EXPORTED_FUNCTIONS='["_dragonCurve"
 Create project
 
 ```sh
-docker run --rm -v $(pwd):$(pwd) -w $(pwd) -e "USER=$(whoami)" all-wasm wasm-pack new rust-example
+docker run --rm -v $(pwd):$(pwd) -w $(pwd) -e "USER=$(whoami)" zloymult/wasm-ttde wasm-pack new rust-example
 ```
 
 Compile project
 
 ```sh
-docker run --rm -v $(pwd):$(pwd) -w $(pwd)/rust-example -e "USER=$(whoami)" all-wasm wasm-pack build --release --target web
+docker run --rm -v $(pwd):$(pwd) -w $(pwd)/rust-example -e "USER=$(whoami)" zloymult/wasm-ttde wasm-pack build --release --target web
 ```
 
 ## Running
@@ -61,6 +61,9 @@ docker run --rm -v $(pwd):$(pwd) -w $(pwd)/rust-example -e "USER=$(whoami)" all-
     # Or if you have python3
     python -m http.server
     ```
+
+    or via docker
+    `docker run --rm -v $(pwd):$(pwd) -w $(pwd) -p 8000:8000 all-wasm python -m http.server`
 
 2.  Open http://localhost:8000/ in your browser.
 
