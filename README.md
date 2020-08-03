@@ -14,11 +14,18 @@ This example computes coordinates for [Dragon Curve](https://en.wikipedia.org/wi
 
 ### Pure llvm
 
-TODO: dockerize
+Compile:
 
 ```sh
-cd
-clang --target=wasm32 -O3 -nostdlib -Wl,--no-entry -Wl,--export-all -o dragon-curve-pure-llvm/dragon-curve.wasm dragon-curve-pure-llvm/dragon-curve.c
+docker run --rm -v $(pwd):$(pwd) -u $(id -u):$(id -g) -w $(pwd) all-wasm \
+clang --target=wasm32 -O3 -nostdlib -Wl,--no-entry -Wl,--export-all -o dragon-curve.wasm dragon-curve.c
+```
+
+Optimize with wasm-opt
+
+```sh
+docker run --rm -v $(pwd):$(pwd) -u $(id -u):$(id -g) -w $(pwd) all-wasm \
+wasm-opt -Os dragon-curve.wasm -o dragon-curve-opt.wasm
 ```
 
 ### Emscripten
@@ -26,12 +33,23 @@ clang --target=wasm32 -O3 -nostdlib -Wl,--no-entry -Wl,--export-all -o dragon-cu
 To build WASM file and JS runtime
 
 ```sh
-docker run --rm -v $(pwd):$(pwd) -u $(id -u):$(id -g) trzeci/emscripten emcc $(pwd)/dragon-curve-emscripten/dragon-curve.c -o $(pwd)/dragon-curve-emscripten/dragon-curve.js -s EXPORTED_FUNCTIONS='["_dragonCurve"]' -s EXPORTED_RUNTIME_METHODS='["ccall"]' -s ALLOW_MEMORY_GROWTH=1
+docker run --rm -v $(pwd):$(pwd) -w $(pwd) all-wasm \
+emcc dragon-curve.c -o dragon-curve-em.js -s EXPORTED_FUNCTIONS='["_dragonCurve"]' -s EXPORTED_RUNTIME_METHODS='["ccall"]' -s ALLOW_MEMORY_GROWTH=1
 ```
 
 ### Rust example
 
-`cargo build --target wasm32-unknown-unknown --release`
+Create project
+
+```sh
+docker run --rm -v $(pwd):$(pwd) -w $(pwd) -e "USER=$(whoami)" all-wasm wasm-pack new rust-example
+```
+
+Compile project
+
+```sh
+docker run --rm -v $(pwd):$(pwd) -w $(pwd)/rust-example -e "USER=$(whoami)" all-wasm wasm-pack build --release --target web
+```
 
 ## Running
 
