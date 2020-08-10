@@ -28,6 +28,20 @@ docker run --rm -v $(pwd):$(pwd) -u $(id -u):$(id -g) -w $(pwd) zloymult/wasm-tt
 wasm-opt -Os dragon-curve.wasm -o dragon-curve-opt.wasm
 ```
 
+Object-dump
+
+```sh
+docker run --rm -v $(pwd):$(pwd) -u $(id -u):$(id -g) -w $(pwd) zloymult/wasm-ttde \
+wasm-objdump dragon-curve-opt.wasm -s
+```
+
+wasm-to-wat
+
+```sh
+docker run --rm -v $(pwd):$(pwd) -u $(id -u):$(id -g) -w $(pwd) zloymult/wasm-ttde \
+wasm2wat dragon-curve-opt.wasm
+```
+
 ### Emscripten
 
 To build WASM file and JS runtime
