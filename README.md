@@ -48,7 +48,10 @@ To build WASM file and JS runtime
 
 ```sh
 docker run --rm -v $(pwd):$(pwd) -w $(pwd) zloymult/wasm-ttde \
-emcc dragon-curve.c -o dragon-curve-em.js -s EXPORTED_FUNCTIONS='["_dragonCurve"]' -s EXPORTED_RUNTIME_METHODS='["ccall"]' -s ALLOW_MEMORY_GROWTH=1
+emcc dragon-curve.c -Os -o dragon-curve-em.js \
+-s EXPORTED_FUNCTIONS='["_dragonCurve", "_malloc", "_free"]' \
+-s EXPORTED_RUNTIME_METHODS='["ccall"]' \
+-s MODULARIZE=1
 ```
 
 ### Rust example
@@ -85,3 +88,8 @@ docker run --rm -v $(pwd):$(pwd) -w $(pwd)/rust-example -e "USER=$(whoami)" zloy
 
 A simple curve that could be generated as a sequence of left/right turns
 ![Dragon Curve generation](dc.svg)
+
+```
+docker run --rm -v $(pwd):$(pwd) -u $(id -u):$(id -g) -w $(pwd) zloymult/wasm-ttde \
+python -m http.server
+```

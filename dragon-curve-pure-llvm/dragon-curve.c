@@ -3,10 +3,12 @@
 
 // helper for transforming turns into coordinates
 // 0 1 0 -1....
+
 int sign(int x) { return (x % 2) * (2 - (x % 4)); }
 
 // -1 for left and 1 for right
 // see https://en.wikipedia.org/wiki/Dragon_curve
+
 int getTurn(int n)
 {
   int turnFlag = (((n + 1) & -(n + 1)) << 1) & (n + 1);

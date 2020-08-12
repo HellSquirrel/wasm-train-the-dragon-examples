@@ -3,67 +3,43 @@
   <head>
     <title>Dragon Curve from WebAssembly</title>
   </head>
+  <script type="text/javascript" src="./dragon-curve-em.js"></script>
   <body>
     <canvas id="canvas" width="1920" height="1080">
       Your browser does not support the canvas element.
     </canvas>
 
     <script>
-      const size = 2000;
-      const len = 10;
-      const x0 = 500;
-      const y0 = 500;
+      Module().then((instance) => {
+        const size = 2000;
+        const len = 10;
+        const x0 = 500;
+        const y0 = 500;
+        const canvas = document.querySelector("canvas");
+        const ctx = canvas.getContext("2d");
 
-      var Module = {
-        onRuntimeInitialized: function () {
-          const canvas = document.querySelector("canvas");
-          const ctx = canvas.getContext("2d");
-          const coords = points();
+        const memoryBuffer = instance._malloc(2 * size * 8);
+        instance.ccall(
+          "dragonCurve",
+          null,
+          ["number", "number", "number", "number"],
+          [memoryBuffer, size, len, x0, y0]
+        );
 
-          ctx.beginPath();
-          ctx.moveTo(x0, y0);
-          [...Array(size)].forEach((_, i) => {
-            ctx.lineTo(coords[2 * i], coords[2 * i + 1]);
-          });
-          ctx.stroke();
-        },
-      };
+        const coords = instance.HEAPF64.subarray(
+          memoryBuffer / 8,
+          2 * size + memoryBuffer / 8
+        );
 
-      function points() {
-        var sequence = new Float64Array(size);
+        ctx.beginPath();
+        ctx.moveTo(x0, y0);
+        [...Array(size)].forEach((_, i) => {
+          ctx.lineTo(coords[2 * i], coords[2 * i + 1]);
+        });
+        ctx.stroke();
 
-        try {
-          // Allocate memory and copy our blank array to it (to avoid problems with possible garbage)
-          var memoryBuffer = Module._malloc(
-            sequence.length * sequence.BYTES_PER_ELEMENT
-          );
-          Module.HEAPF64.set(
-            sequence,
-            memoryBuffer / sequence.BYTES_PER_ELEMENT
-          );
-          // Call C code
-          Module.ccall(
-            "dragonCurve",
-            null,
-            ["number", "number", "number", "number"],
-            [memoryBuffer, size, len, x0, y0]
-          );
-          // Copy results from memory to JS array
-          sequence.set(
-            Module.HEAPF64.subarray(
-              memoryBuffer / sequence.BYTES_PER_ELEMENT,
-              memoryBuffer / sequence.BYTES_PER_ELEMENT + sequence.length
-            )
-          );
-        } finally {
-          // Release memory
-          Module._free(memoryBuffer);
-        }
-
-        return sequence;
-      }
+        instance._free(memoryBuffer);
+      });
     </script>
-
-    <script async type="text/javascript" src="./dragon-curve.js"></script>
   </body>
 </html>
