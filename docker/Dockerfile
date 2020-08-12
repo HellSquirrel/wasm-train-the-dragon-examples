@@ -54,7 +54,7 @@ RUN mkdir wabt-build && cd wabt-build && CXX=`which g++` CC=`which gcc` cmake -D
 ENV PATH=/wabt-build:$PATH
 
 RUN apt-get remove -y --auto-remove \
-    wget gcc g++ make; \
+    wget make; \
     rm -rf wabt; \
     rm -rf /var/lib/apt/lists/*;
 
