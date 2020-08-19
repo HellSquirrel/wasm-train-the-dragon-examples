@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Dragon Curve from WebAssembly</title>
+  </head>
+  <body>
+    <canvas id="canvas" width="1920" height="1080"></canvas>
+
+    <script>
+      const size = 2000;
+      const len = 10;
+      const x0 = 500;
+      const y0 = 500;
+      WebAssembly.instantiateStreaming(
+        fetch("/dragon-curve-pure-llvm/dragon-curve.wasm"),
+        {
+          imports: {},
+        }
+      ).then((obj) => {
+        const { memory, __heap_base, dragonCurve } = obj.instance.exports;
+        dragonCurve(__heap_base, size, len, x0, y0);
+        const coords = new Float64Array(memory.buffer, __heap_base, size);
+        const canvas = document.querySelector("canvas");
+        const ctx = canvas.getContext("2d");
+        ctx.beginPath();
+        ctx.moveTo(x0, y0);
+        [...Array(size)].forEach((_, i) => {
+          ctx.lineTo(coords[2 * i], coords[2 * i + 1]);
+        });
+        ctx.stroke();
+      });
+    </script>
+  </body>
+</html>
