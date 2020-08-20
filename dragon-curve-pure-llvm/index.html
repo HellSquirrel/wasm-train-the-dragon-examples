@@ -25,9 +25,13 @@
         ctx.beginPath();
         ctx.moveTo(x0, y0);
         [...Array(size)].forEach((_, i) => {
-          ctx.lineTo(coords[2 * i], coords[2 * i + 1]);
+          setTimeout(() => {
+            requestAnimationFrame(() => {
+              ctx.lineTo(coords[2 * i], coords[2 * i + 1]);
+              ctx.stroke();
+            });
+          }, 100 * i);
         });
-        ctx.stroke();
       });
     </script>
   </body>
