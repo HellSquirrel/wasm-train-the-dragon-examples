@@ -1,11 +1,14 @@
-FROM python:slim
+FROM python:slim as base
 
+# install libraries
 RUN set -eux; \
     apt-get update; \
     apt-get install -y --no-install-recommends \
     ca-certificates gcc libc6-dev wget git xz-utils bzip2 pkg-config libssl-dev
 
-RUN git clone https://github.com/emscripten-core/emsdk.git
+
+# emscripten
+RUN git clone --depth 1 --branch master https://github.com/emscripten-core/emsdk.git
 
 ENV EMSDK_VERSION=1.40.1
 
@@ -13,11 +16,11 @@ RUN cd emsdk \
     && ./emsdk install ${EMSDK_VERSION} \
     && ./emsdk activate ${EMSDK_VERSION}
 
-ENV PATH=/emsdk/upstream/emscripten:/emsdk:/emsdk/node/12.18.1_64bit/bin:/emsdk/upstream/bin:$PATH
 
-ENV RUSTUP_HOME=/usr/local/rustup \
-    CARGO_HOME=/usr/local/cargo \
-    PATH=/usr/local/cargo/bin:$PATH \
+# rust
+ENV RUSTUP_HOME=/rustup \
+    CARGO_HOME=/cargo \
+    PATH=/cargo/bin:$PATH \
     RUST_VERSION=1.45.1
 
 RUN dpkgArch="$(dpkg --print-architecture)"; \
@@ -38,6 +41,7 @@ RUN dpkgArch="$(dpkg --print-architecture)"; \
 
 RUN cargo install wasm-pack
 
+# cmake
 RUN wget https://github.com/Kitware/CMake/releases/download/v3.18.1/cmake-3.18.1-Linux-x86_64.sh \
     -q -O /tmp/cmake-install.sh \
     && chmod u+x /tmp/cmake-install.sh \
@@ -47,14 +51,28 @@ RUN wget https://github.com/Kitware/CMake/releases/download/v3.18.1/cmake-3.18.1
 
 ENV PATH=/usr/local/cmake/bin:$PATH
 
-RUN git clone --recursive https://github.com/WebAssembly/wabt
+# wabt
+RUN git clone --recursive --depth 1 --branch master https://github.com/WebAssembly/wabt
 
 RUN apt-get install -y make g++
 RUN mkdir wabt-build && cd wabt-build && CXX=`which g++` CC=`which gcc` cmake -DBUILD_TESTS=OFF /wabt && cmake --build .
+
+FROM python:slim as build
+
+ENV RUSTUP_HOME=/rustup \
+    CARGO_HOME=/cargo \
+    PATH=/cargo/bin:$PATH \
+    RUST_VERSION=1.45.1
+
+
+COPY --from=base /rustup /rustup
+COPY --from=base /cargo /cargo
+
+COPY --from=base /emsdk /emsdk
+ENV PATH=/emsdk/upstream/emscripten:/emsdk:/emsdk/node/12.18.1_64bit/bin:/emsdk/upstream/bin:$PATH
+
+COPY --from=base /wabt-build /wabt-build
 ENV PATH=/wabt-build:$PATH
 
-RUN apt-get remove -y --auto-remove \
-    wget make; \
-    rm -rf wabt; \
-    rm -rf /var/lib/apt/lists/*;
+RUN apt-get update && apt-get install -y --no-install-recommends gcc libc6-dev
 
