@@ -57,6 +57,7 @@ RUN git clone --recursive --depth 1 --branch master https://github.com/WebAssemb
 RUN apt-get install -y make g++
 RUN mkdir wabt-build && cd wabt-build && CXX=`which g++` CC=`which gcc` cmake -DBUILD_TESTS=OFF /wabt && cmake --build .
 
+# build
 FROM python:slim as build
 
 ENV RUSTUP_HOME=/rustup \
