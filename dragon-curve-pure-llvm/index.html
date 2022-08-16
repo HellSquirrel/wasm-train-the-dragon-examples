@@ -1,3 +1,20 @@
+<!-- We use the standard fetch API to load our module, 
+    and the built-in WebAssembly JavaScript API to instantiate it.
+    WebAssembly.instantiateStreaming returns a promise that resolves with a module object, containing an instance of our module. 
+    Our C functions are now available as the instance’s exports, and we can use them from JavaScript however we please. 
+
+     a memory object representing the linear memory of our WebAssembly module can contain important things like our stack of instructions for the virtual machine.
+     __heap_base property gives us an offset into a memory region that is safe for us to use (the heap).
+     We give the offset into the “good” memory to our dragonCurve function, call it, and extract the contents of the heap populated with coordinates as a Float64Array.
+     The rest is just drawing a line on the canvas based on the coordinates extracted from our Wasm module. 
+
+     Run this to see it:
+     docker run --rm -v $(pwd):$(pwd) -w $(pwd) -p 8000:8000 zloymult/wasm-build-kit \
+     python -m http.server
+
+     Navigate to http://localhost:8000 and behold the dragon curve!
+-->
+
 <!DOCTYPE html>
 <html>
   <head>

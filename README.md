@@ -56,16 +56,11 @@ emcc dragon-curve.c -Os -o dragon-curve-em.js \
 
 ### Rust example
 
-Create project
+Install wasm-pack https://rustwasm.github.io/wasm-pack/installer
 
-```sh
-docker run --rm -v $(pwd):$(pwd) -w $(pwd) -e "USER=$(whoami)" zloymult/wasm-ttde wasm-pack new rust-example
-```
-
-Compile project
-
-```sh
-docker run --rm -v $(pwd):$(pwd) -w $(pwd)/rust-example -e "USER=$(whoami)" zloymult/wasm-ttde wasm-pack build --release --target web
+```sh 
+cd rust-example
+wasm-pack build --release --target web
 ```
 
 ## Running
