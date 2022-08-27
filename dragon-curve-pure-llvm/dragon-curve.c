@@ -31,3 +31,28 @@ void dragonCurve(double source[], int size, int len, double x0, double y0)
   }
 }
 #endif
+
+/**
+docker run --rm -v $(pwd):$(pwd) -w $(pwd) zloymult/wasm-build-kit \
+clang --target=wasm32 -O3 -nostdlib -Wl,--no-entry -Wl,--export-all -o dragon-curve.wasm dragon-curve.c
+
+
+--target=wasm32 tells a compiler to use WebAssembly as a target for compilation.
+-O3 applies a maximum amount of optimizations.
+-nostdlib tells not to use system libraries, as they are useless in the context of a browser.
+-Wl,--no-entry -Wl,--export-all are flags that tell the linker to export all the C functions we defined from the WebAssembly module and ignore the absence of main().
+
+
+to inspect generated wasm file,
+docker run --rm -v $(pwd):$(pwd) -w $(pwd) zloymult/wasm-build-kit \
+wasm-objdump dragon-curve.wasm -s
+
+
+We can reduce the size of our binary with an awesome tool called Bynarien that is a part of the WebAssembly toolchain.
+docker run --rm -v $(pwd):$(pwd) -w $(pwd) zloymult/wasm-build-kit \
+wasm-opt -Os dragon-curve.wasm -o dragon-curve-opt.wasm
+
+to read wasm in text,
+docker run --rm -v $(pwd):$(pwd) -w $(pwd) zloymult/wasm-build-kit \
+wasm2wat dragon-curve-opt.wasm > dragon-curve-opt.wat
+*/
